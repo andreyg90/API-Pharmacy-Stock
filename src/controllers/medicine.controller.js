@@ -1,13 +1,30 @@
 import medicineModel from "../models/medicine.model.js"
+import {sellMedicineService,getLowStackMedicines} from "../service/sellMedicine.servive.js";
 
 const Medicine = medicineModel;
 
-export const getMedicine = (req,res)=>{
+export const getMedicine = async (req,res)=>{
 
-    res.status(200).json({
+   try {
 
-        msg:'Estoy en el get dentro del controller'
-    })
+        const {id}= req.params
+
+        const medicine = await Medicine.findById(id)
+
+    
+        res.status(200).json({
+
+             medicine
+        })
+        
+   } catch (error) {
+
+        res.status(500).json({
+
+            msg:'Internal Server Error',
+            error:error.message
+        });
+   }
 
 }
 
@@ -16,6 +33,7 @@ export const getMedicines = async(req,res)=>{
    try {
 
     const medicines = await Medicine.find({status:true})
+   // console.log(medicines)
 
     res.status(200).json({
 
@@ -33,31 +51,14 @@ export const getMedicines = async(req,res)=>{
 
 }
 
-
-
-/**
- * Crea un medicamento con las propiedades requeridas
- * 
- * @param {import('express').Request} req Express Response
- * @param {import('express')Response} res Express Response
- * @returns {Promise<void>} Http Response
- */
 export const createMedicine = async(req,res)=>{
 
     try {
 
         const {name,description,price,stock,type,entryDate,expirationDate,status}= req.body;
-        const medicineExist = await Medicine.findOne({name:name});
-        if(medicineExist){
-
-            return res.status(404).json({
-
-                msg:'Ya se encuentra un producto registrado con ese nombre'
-            });
-        }
-
         const medicine = new Medicine({name,description,price,stock,type,entryDate,expirationDate,status});
         await medicine.save();
+        
 
         res.status(200).json({
 
@@ -70,27 +71,113 @@ export const createMedicine = async(req,res)=>{
 
             msg:'Error interno del servidor',
             error: error.message
+        });
+    }
+}
+
+export const updateMedicine = async(req,res)=>{
+
+    try {
+
+        const {id}= req.params
+
+        const {name,description,price,stock,type,entryDate,expirationDate,status}= req.body;
+
+        const data ={
+
+            name,description,price,stock,type,entryDate,expirationDate,status
+        }
+
+        await Medicine.findByIdAndUpdate(id,data,{returnDocument:"after"})
+
+        res.status(200).json({
+
+            msg:'El medicamento ha sido actualizado',
+            
+        })
+
+        
+    } catch (error) {
+
+        res.status(500).json({
+
+            msg:'Internal Server Error',
+            error:error.message
         })
     }
-   
 
 }
 
-export const updateMedicine = (req,res)=>{
+export const deleteMedicine = async (req,res)=>{
+
+   try {
+
+    const {id}= req.params
+
+    await Medicine.findByIdAndUpdate(id,{status:false},{returnDocument:"after"})
 
     res.status(200).json({
 
-        msg:'actualizar medicines'
+        msg:'Se ha eliminado satisfactoriamente el medicamento'
     })
+    
+   } catch (error) {
+
+        res.status(500).json({
+
+            msg:'Internal Error Server '
+        })
+   }
 
 }
 
-export const deleteMedicine = (req,res)=>{
+export const  sellMedicine= async(req,res)=>{
 
-    res.status(200).json({
+    try {
 
-        msg:'delete medicines'
-    })
+        const { id } = req.params;
+        const { quantity } = req.body;
 
+       const result =  await sellMedicineService(id, quantity);
+
+       res.status(200).json({
+
+            message: result.msg,
+            medicine: result.medicine
+       })
+
+
+        
+    } catch (error) {
+        
+        res.status(404).json({
+
+           error: error.message
+        })
+    }
+    
 }
 
+export const lowStockMedicine = async (req,res)=>{
+
+    try {
+
+       const medicines = await getLowStackMedicines(); 
+
+         res.status(200).json({ 
+            msg:'Medicamentos con bajo stock',
+            medicines
+         })
+
+    } catch (error) {
+        
+        res.status(500).json({
+
+            msg:'Internal Server Error',
+            error: error.message
+        })
+    }
+
+    
+
+}
