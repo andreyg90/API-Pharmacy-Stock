@@ -47,6 +47,7 @@ const MedicineSchema = new Schema({
 
         type:Boolean,
         require:true,
+        
         default:true
     },
 },{ timestamps: true }
