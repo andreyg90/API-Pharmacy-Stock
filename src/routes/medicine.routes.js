@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { check } from "express-validator";
 import { getMedicine,getMedicines,createMedicine,updateMedicine,deleteMedicine,sellMedicine,lowStockMedicine} from "../controllers/medicine.controller.js";
+import { createSale } from "../controllers/invoice.controller.js";
 import validarCampos from "../middlewares/validaCampos.middleware.js";
 import { isMedicineById} from "../helpers/validators.helper.js";
 const router = Router();
@@ -35,6 +36,7 @@ router.post('/sellMedicine/:id',[
     check('quantity').isInt({ gt: 0 })
      .withMessage('La cantidad debe ser mayor a cero'),
     validarCampos],sellMedicine)
+router.post('/createSale',createSale)
 
 
 
