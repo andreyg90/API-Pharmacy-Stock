@@ -28,11 +28,11 @@ export const getLowStackMedicines = async () => {
   return await medicineModel.find({ stock: { $lte: 3 } });
 };
 
-export const updateStockMedicine = async (medicineId, quantity) => {
+export const updateStockMedicine = async (medicineId, quantity, session) => {
   const result = await medicineModel.findByIdAndUpdate(
     medicineId,
     { $inc: { stock: -quantity } },
-    { new: true },
+    { new: true, session },
   );
 
   if (!result) {
