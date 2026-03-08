@@ -1,37 +1,34 @@
-import { Schema,model } from "mongoose";
+import { Schema, model } from "mongoose";
 
-const invoiceDetailSchema =new Schema({
-
-    invoice:{
-
-        type:Schema.Types.ObjectId,
-        ref:'Invoice',
-        require:true
+const invoiceDetailSchema = new Schema(
+  {
+    invoice: {
+      type: Schema.Types.ObjectId,
+      ref: "Invoice",
+      required: true,
     },
 
-    medicine:{
-        type:Schema.Types.ObjectId,
-        ref:'Medicine',
-        require:true
-        
+    medicine: {
+      type: Schema.Types.ObjectId,
+      ref: "Medicine",
+      required: true,
     },
 
-    quantity:{
-
-        type:Number,
-        require:true,
-        
+    quantity: {
+      type: Number,
+      required: true,
     },
-    unitPrice:{
-
-        type: Number,
-        require:true, 
+    unitPrice: {
+      type: Number,
+      required: true,
     },
 
-    amount:{
-        type:Number,
-        require:true
-    }
-},{ timestamps: true })
+    amount: {
+      type: Number,
+      required: true,
+    },
+  },
+  { timestamps: true },
+);
 
-export default model("InvoiceDetail",invoiceDetailSchema)
+export default model("InvoiceDetail", invoiceDetailSchema);
