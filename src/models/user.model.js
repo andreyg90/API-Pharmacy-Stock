@@ -19,9 +19,8 @@ const userSchema = Schema({
   },
 
   rol: {
-    type: Schema.Types.ObjectId,
-    ref: "Role",
-    required: true,
+    type: String,
+    enum: ["admin", "seller"],
   },
 
   status: {

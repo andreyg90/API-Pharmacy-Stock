@@ -1,63 +1,54 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import router from './routes/medicine.routes.js';
-import conectarBD from './config/db.connection.js';
-
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import medicineRouter from "./routes/medicine.routes.js";
+import userRouter from "./routes/user.routes.js";
+import authRouter from "./routes/auth.routes.js";
+import conectarBD from "./config/db.connection.js";
 
 dotenv.config();
 
-const myRouter = router;
-
-
 //Creamos la clase Server
 
-class Server{
+class Server {
+  constructor() {
+    this.app = express();
+    this.port = process.env.PORT;
+    this.path = {
+      medicine: "/api/medicines",
+      user: "/api/users",
+      auth: "/api/auth",
+    };
 
-    constructor(){
+    this.db();
 
-        this.app = express();
-        this.port =process.env.PORT
-        this.path = '/api/medicines'
+    this.middlewares();
 
+    //Llamada a routes
 
-        this.db()
+    this.routes();
+  }
 
-        this.middlewares()
+  async db() {
+    await conectarBD();
+  }
 
-        //Llamada a routes
+  middlewares() {
+    this.app.use(cors());
+    this.app.use(express.json());
+  }
 
-        this.routes()
-        
-    }
+  routes() {
+    this.app.use(this.path.medicine, medicineRouter);
+    this.app.use(this.path.user, userRouter);
+    this.app.use(this.path.auth, authRouter);
+  }
 
-    async db(){
-
-        await conectarBD();
-
-    }
-
-    middlewares(){
-
-        this.app.use(cors());
-        this.app.use(express.json());
-    }
-
-    routes(){
-
-
-       this.app.use(this.path,myRouter)
-      
-    }
-
-    listen(){
-
-        this.app.listen(this.port,()=>{
-
-            console.log('Starting the server on port : ', this.port)
-        })
-    }
-
+  listen() {
+    this.app.listen(this.port, () => {
+      console.log("Starting the server on port : ", this.port);
+    });
+  }
 }
 
 export default Server;
