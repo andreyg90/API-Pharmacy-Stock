@@ -10,7 +10,9 @@ import {
   lowStockMedicine,
 } from "../controllers/medicine.controller.js";
 import { createSale } from "../controllers/invoice.controller.js";
-import validarCampos from "../middlewares/validaCampos.middleware.js";
+import validateFields from "../middlewares/validateFields.middleware.js";
+import { validateJWT } from "../middlewares/validateJWT.middleware.js";
+import { validateAdminRol } from "../middlewares/validateRol.middleware.js";
 import { isMedicineById } from "../helpers/validators.helper.js";
 const router = Router();
 
@@ -21,13 +23,15 @@ router.get(
   [
     check("id", "No es un id válido").isMongoId(),
     check("id").custom(isMedicineById),
-    validarCampos,
+    validateFields,
   ],
   getMedicine,
 );
 router.post(
   "/",
   [
+    validateJWT,
+    validateAdminRol,
     check("name", "El nombre es obligatorio").not().isEmpty(),
     check("description", "La descripción es obligatoria").not().isEmpty(),
     check("price", "El precio es obligatorio").not().isEmpty(),
@@ -38,7 +42,7 @@ router.post(
       .not()
       .isEmpty(),
     check("status", "El estado del medicamento es obligatorio").not().isEmpty(),
-    validarCampos,
+    validateFields,
   ],
   createMedicine,
 );
@@ -47,7 +51,7 @@ router.put(
   [
     check("id", "No es un id válido").isMongoId(),
     check("id").custom(isMedicineById),
-    validarCampos,
+    validateFields,
   ],
   updateMedicine,
 );
@@ -56,7 +60,7 @@ router.delete(
   [
     check("id", "No es un id válido").isMongoId(),
     check("id").custom(isMedicineById),
-    validarCampos,
+    validateFields,
   ],
   deleteMedicine,
 );
@@ -68,7 +72,7 @@ router.post(
     check("quantity")
       .isInt({ gt: 0 })
       .withMessage("La cantidad debe ser mayor a cero"),
-    validarCampos,
+    validateFields,
   ],
   sellMedicine,
 );

@@ -1,4 +1,4 @@
-import { generarJWT } from "../helpers/generarJWT.helper.js";
+import { generateJWT } from "../helpers/generateJWT.helper.js";
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 
@@ -21,7 +21,7 @@ export const userLogin = async (req, res) => {
       return res.status(400).json("Usuario o contraseña incorrecta");
     }
 
-    const token = await generarJWT(user._id);
+    const token = await generateJWT(user._id);
     console.log(token);
     res.status(200).json({
       user,
