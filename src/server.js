@@ -4,6 +4,7 @@ import cors from "cors";
 import medicineRouter from "./routes/medicine.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import invoiceRouter from "./routes/invoice.routes.js";
 import conectarBD from "./config/db.connection.js";
 
 dotenv.config();
@@ -18,6 +19,7 @@ class Server {
       medicine: "/api/medicines",
       user: "/api/users",
       auth: "/api/auth",
+      invoice: "/api/invoices",
     };
 
     this.db();
@@ -42,6 +44,7 @@ class Server {
     this.app.use(this.path.medicine, medicineRouter);
     this.app.use(this.path.user, userRouter);
     this.app.use(this.path.auth, authRouter);
+    this.app.use(this.path.invoice, invoiceRouter);
   }
 
   listen() {
