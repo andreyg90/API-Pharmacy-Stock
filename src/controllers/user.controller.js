@@ -34,10 +34,6 @@ export const getUser = async (req, res) => {
   const { id } = req.params;
   try {
     const user = await User.findById(id);
-    //TODO: se debe quitar cuando implementemos los middlewares
-    if (!user) {
-      return res.status(400).json("Usuario no encontrado");
-    }
 
     res.status(200).json({
       user,

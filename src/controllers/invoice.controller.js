@@ -1,11 +1,12 @@
 import Invoice from "../models/invoice.model.js";
 import InvoiceDetail from "../models/invoiceDetails.model.js";
-import { getTotalInvoice, createInvoice } from "../service/invoice.service.js";
-//import { getMedicinePrice } from '../service/sellMedicine.servive.js';
+import { createInvoice } from "../service/invoice.service.js";
+import { generateFSInvoice } from "../service/generateFSInvoice.service.js";
 
 export const createSale = async (req, res) => {
   try {
     const result = await createInvoice(req.body);
+    await generateFSInvoice(result);
 
     res.status(201).json({
       msg: "Factura creada",
