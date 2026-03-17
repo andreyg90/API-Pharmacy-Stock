@@ -1,17 +1,17 @@
 import { Schema, model } from "mongoose";
 
-const invoiceSchema = new Schema(
+const creditNoteSchema = new Schema(
   {
     clientName: {
       type: String,
       require: true,
     },
-    invoiceNumber: {
+    creditNumber: {
       type: Number,
       required,
     },
 
-    dateInvoice: {
+    dateCreditNote: {
       type: Date,
       default: Date.now(),
     },
@@ -21,12 +21,8 @@ const invoiceSchema = new Schema(
       require: false,
       default: 0,
     },
-    status: {
-      type: String,
-      default: "active",
-    },
   },
   { timestamps: true },
 );
 
-export default model("Invoice", invoiceSchema);
+export default model("CreditNode", creditNoteSchema);
