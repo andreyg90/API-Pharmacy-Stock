@@ -5,6 +5,7 @@ import medicineRouter from "./routes/medicine.routes.js";
 import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import invoiceRouter from "./routes/invoice.routes.js";
+import creditNoteRouter from "./routes/creditNote.routes.js";
 import conectarBD from "./config/db.connection.js";
 
 dotenv.config();
@@ -20,6 +21,7 @@ class Server {
       user: "/api/users",
       auth: "/api/auth",
       invoice: "/api/invoices",
+      creditNote: "/api/creditNotes",
     };
 
     this.db();
@@ -45,6 +47,7 @@ class Server {
     this.app.use(this.path.user, userRouter);
     this.app.use(this.path.auth, authRouter);
     this.app.use(this.path.invoice, invoiceRouter);
+    this.app.use(this.path.creditNote, creditNoteRouter);
   }
 
   listen() {

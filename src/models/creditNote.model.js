@@ -8,7 +8,12 @@ const creditNoteSchema = new Schema(
     },
     creditNumber: {
       type: Number,
-      required,
+      required: true,
+    },
+    invoice: {
+      type: Schema.Types.ObjectId,
+      ref: "Invoice",
+      required: true,
     },
 
     dateCreditNote: {
@@ -20,6 +25,10 @@ const creditNoteSchema = new Schema(
       type: Number,
       require: false,
       default: 0,
+    },
+    reason: {
+      type: String,
+      required: true,
     },
   },
   { timestamps: true },

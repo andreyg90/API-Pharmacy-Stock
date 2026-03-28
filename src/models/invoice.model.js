@@ -4,11 +4,11 @@ const invoiceSchema = new Schema(
   {
     clientName: {
       type: String,
-      require: true,
+      required: true,
     },
     invoiceNumber: {
       type: Number,
-      required,
+      required: true,
     },
 
     dateInvoice: {
@@ -18,7 +18,7 @@ const invoiceSchema = new Schema(
 
     total: {
       type: Number,
-      require: false,
+      required: false,
       default: 0,
     },
     status: {
