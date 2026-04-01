@@ -46,7 +46,7 @@ export const createInvoice = async (body) => {
     );
 
     for (const { medicine, quantity } of details) {
-      await updateStockMedicine(medicine, quantity, session);
+      await updateStockMedicine(medicine, -quantity, session);
     }
 
     await session.commitTransaction();

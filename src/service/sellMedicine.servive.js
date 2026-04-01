@@ -31,7 +31,7 @@ export const getLowStackMedicines = async () => {
 export const updateStockMedicine = async (medicineId, quantity, session) => {
   const result = await medicineModel.findByIdAndUpdate(
     medicineId,
-    { $inc: { stock: -quantity } },
+    { $inc: { stock: quantity } },
     { new: true, session },
   );
 
