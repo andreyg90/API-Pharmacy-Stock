@@ -6,13 +6,41 @@ import CreditNoteDetail from "../models/creditNoteDetails.model.js";
 import mongoose from "mongoose";
 import { updateStockMedicine } from "../service/sellMedicine.servive.js";
 
+export const returnCreditNoteDetails = (detailToReverse, details) => {
+  let detailFound;
+  let creditNoteDetails = [];
+
+  for (const element of detailToReverse) {
+    detailFound = details.find(
+      (detail) => detail.medicine.toString() === element.medicine,
+    );
+
+    const available =
+      detailFound.quantity - (detailFound.reversedQuantity || 0);
+
+    if (element.quantity > available) {
+      throw new Error(`Solo puedes devolver ${available} unidades`);
+    }
+
+    creditNoteDetails.push({
+      medicine: detailFound.medicine,
+
+      quantity: element.quantity,
+
+      unitPrice: detailFound.unitPrice,
+      amount: element.quantity * detailFound.unitPrice,
+    });
+  }
+  // falta actualizar el campo reversedQuantity en InvoiceDetail para llevar el control de las cantidades reversadas
+  return creditNoteDetails;
+};
 export const createCreditNote = async (req) => {
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
     const { reason } = req.body;
-    const { idInvoice } = req.params;
+    const { idInvoice } = req.params; // invoice number
     const invoice = await Invoice.findOne({
       _id: idInvoice,
       status: "active",
@@ -28,26 +56,15 @@ export const createCreditNote = async (req) => {
     /***************************************************** */
     if (req.body.type === "partial") {
       const { detailToReverse } = req.body;
-      let detailFound;
 
-      for (const element of detailToReverse) {
-        detailFound = details.find(
-          (detail) => detail.medicine.toString() === element.medicine,
+      creditNoteDetails = returnCreditNoteDetails(detailToReverse, details);
+
+      for (const { medicine, quantity } of creditNoteDetails) {
+        await InvoiceDetail.findOneAndUpdate(
+          { invoice: invoice._id, medicine },
+          { $inc: { reversedQuantity: quantity } },
+          { session },
         );
-
-        if (element.quantity > detailFound.quantity) {
-          throw new Error(
-            "La cantidad no debe ser mayor a la cantidad registrada en la factura ",
-          );
-        }
-        creditNoteDetails.push({
-          medicine: detailFound.medicine,
-
-          quantity: element.quantity,
-
-          unitPrice: detailFound.unitPrice,
-          amount: element.quantity * detailFound.unitPrice,
-        });
       }
 
       /**************************************************** */
@@ -56,7 +73,9 @@ export const createCreditNote = async (req) => {
         creditNoteDetails.push(element);
       }
     }
-    /*************************************************** */
+    /************************LO USAN TODOS*************************** */
+
+    //Calculo el total de la nota de crédito
     const total = creditNoteDetails.reduce((acumulador, { amount }) => {
       return acumulador + amount;
     }, 0);

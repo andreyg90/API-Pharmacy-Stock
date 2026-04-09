@@ -27,6 +27,11 @@ const invoiceDetailSchema = new Schema(
       type: Number,
       required: true,
     },
+
+    reversedQuantity: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true },
 );
