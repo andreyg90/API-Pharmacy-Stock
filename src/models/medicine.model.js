@@ -1,59 +1,54 @@
-import {Schema,model} from "mongoose";
+import { Schema, model } from "mongoose";
 
-const MedicineSchema = new Schema({
-
-    name:{
-
-        type:String,
-        require:true
+const MedicineSchema = new Schema(
+  {
+    medicineNumber: {
+      type: Number,
+      required: true,
     },
 
-    description:{
-        type:String,
-        require:true,
-        
+    name: {
+      type: String,
+      require: true,
     },
 
-    price:{
-
-        type:Number,
-        require:false
+    description: {
+      type: String,
+      require: true,
     },
 
-    stock:{
-
-        type:Number,
-        require:true,
-        default:0
+    price: {
+      type: Number,
+      require: false,
     },
 
-    type:{
-
-        type:String,
-        require:true
+    stock: {
+      type: Number,
+      require: true,
+      default: 0,
     },
-    entryDate:{
 
-        type:Date,
-        require:true,
-        default: Date.now()
+    type: {
+      type: String,
+      require: true,
     },
-    expirationDate:{
-
-        type:Date,
-        require:true
+    entryDate: {
+      type: Date,
+      require: true,
+      default: Date.now(),
     },
-    status:{
-
-        type:Boolean,
-        require:true,
-        
-        default:true
+    expirationDate: {
+      type: Date,
+      require: true,
     },
-},{ timestamps: true }
-)
+    status: {
+      type: Boolean,
+      require: true,
 
-export default model("Medicine",MedicineSchema);
+      default: true,
+    },
+  },
+  { timestamps: true },
+);
 
-
-
+export default model("Medicine", MedicineSchema);

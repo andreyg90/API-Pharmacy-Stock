@@ -3,6 +3,7 @@ import {
   sellMedicineService,
   getLowStackMedicines,
 } from "../service/sellMedicine.servive.js";
+import { generateNextSequence } from "../helpers/count.helper.js";
 
 const Medicine = medicineModel;
 
@@ -62,8 +63,12 @@ export const createMedicine = async (req, res) => {
       expirationDate,
       status,
     } = req.body;
+
+    //generar un numero único para medicine
+    const medicineNumber = await generateNextSequence("medicine");
     const medicine = new Medicine({
       name,
+      medicineNumber,
       description,
       price,
       stock,

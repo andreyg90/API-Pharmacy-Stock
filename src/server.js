@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.routes.js";
 import invoiceRouter from "./routes/invoice.routes.js";
 import creditNoteRouter from "./routes/creditNote.routes.js";
 import conectarBD from "./config/db.connection.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
 dotenv.config();
 
@@ -31,6 +32,8 @@ class Server {
     //Llamada a routes
 
     this.routes();
+
+    this.app.use(errorHandler); //middleware global
   }
 
   async db() {

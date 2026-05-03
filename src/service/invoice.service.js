@@ -6,6 +6,7 @@ import {
   verifyStockMedicine,
   updateStockMedicine,
 } from "./sellMedicine.servive.js";
+import { generateNextSequence } from "../helpers/count.helper.js";
 
 export const getTotalInvoice = async ({ clientName, detailInvoices }) => {
   let total = detailInvoices.reduce((acc, detail) => {
@@ -31,7 +32,11 @@ export const createInvoice = async (body) => {
       return acumulador + amount;
     }, 0);
 
-    const invoice = await Invoice.create([{ clientName, total }], { session });
+    const invoiceNumber = await generateNextSequence("invoice");
+    const invoice = await Invoice.create(
+      [{ invoiceNumber, clientName, total }],
+      { session },
+    );
     const idInvoice = invoice[0]._id;
 
     await InvoiceDetail.insertMany(

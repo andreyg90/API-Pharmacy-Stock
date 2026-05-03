@@ -1,0 +1,14 @@
+----------------------- MY PHARMACY -----------------------
+Invoice Number: 69f00691d62dc163cccc458b
+Client Name: Carlos Sanchez
+Date: Mon Apr 27 2026 18:59:55 GMT-0600 (hora estándar central)
+------------------------------------------------------------
+Description                 Qty      Price        Amount
+------------------------------------------------------------
+Arcoxia 90mg tabs x 7 units    2     11400       22800
+Cataflam 50mg tabs x 20 units    1      8900        8900
+Celebra 200mg tabs x 100 units    2    123000      246000
+Dextrometorfano jarabe       2      8000       16000
+
+------------------------------------------------------------
+TOTAL: 293700

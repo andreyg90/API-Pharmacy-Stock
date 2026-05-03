@@ -6,6 +6,39 @@ import CreditNoteDetail from "../models/creditNoteDetails.model.js";
 import mongoose from "mongoose";
 import { updateStockMedicine } from "../service/sellMedicine.servive.js";
 
+const verifyToUpdateInvoiceStatus = async (type, idInvoice, session) => {
+  if (type === "total") {
+    await Invoice.findByIdAndUpdate(
+      idInvoice,
+      { status: "inactive" },
+      { session },
+    );
+  }
+
+  if (type === "partial") {
+    const updatedDetails = await InvoiceDetail.find(
+      { invoice: idInvoice },
+      null,
+      { session },
+    );
+
+    const allReversed = updatedDetails.every(
+      (detail) => detail.quantity === (detail.reversedQuantity || 0),
+    );
+    if (allReversed) {
+      await Invoice.findByIdAndUpdate(
+        idInvoice,
+        { status: "inactive" },
+        { session },
+      );
+    }
+  }
+};
+
+/***
+ *
+ *
+ */
 export const returnCreditNoteDetails = (detailToReverse, details) => {
   let detailFound;
   let creditNoteDetails = [];
@@ -14,6 +47,10 @@ export const returnCreditNoteDetails = (detailToReverse, details) => {
     detailFound = details.find(
       (detail) => detail.medicine.toString() === element.medicine,
     );
+
+    if (!detailFound) {
+      throw new Error("El medicamento no pertenece a la factura");
+    }
 
     const available =
       detailFound.quantity - (detailFound.reversedQuantity || 0);
@@ -31,9 +68,15 @@ export const returnCreditNoteDetails = (detailToReverse, details) => {
       amount: element.quantity * detailFound.unitPrice,
     });
   }
-  // falta actualizar el campo reversedQuantity en InvoiceDetail para llevar el control de las cantidades reversadas
+
   return creditNoteDetails;
 };
+
+/***
+ *
+ *
+ */
+
 export const createCreditNote = async (req) => {
   const session = await mongoose.startSession();
 
@@ -59,6 +102,7 @@ export const createCreditNote = async (req) => {
 
       creditNoteDetails = returnCreditNoteDetails(detailToReverse, details);
 
+      //ACTUALIZO LA FACTURA CON LAS CANTIDADES DEVUELTAS PARA QUE NO SE PUEDAN DEVOLVER MAS DE LO QUE SE VENDIO
       for (const { medicine, quantity } of creditNoteDetails) {
         await InvoiceDetail.findOneAndUpdate(
           { invoice: invoice._id, medicine },
@@ -105,19 +149,16 @@ export const createCreditNote = async (req) => {
       })),
       { session },
     );
+
     //ACTUALIZACION DE STOCK
 
     for (const { medicine, quantity } of creditNoteDetails) {
       await updateStockMedicine(medicine, quantity, session);
     }
 
-    if (req.body.type === "total") {
-      await Invoice.findByIdAndUpdate(
-        idInvoice,
-        { status: "inactive" },
-        { session },
-      );
-    }
+    await verifyToUpdateInvoiceStatus(req.body.type, idInvoice, session);
+
+    //verifico si todas las lineas de la factura fueron devueltas para actualizar el estado de la factura a inactiva
 
     await session.commitTransaction();
     session.endSession();
@@ -128,4 +169,26 @@ export const createCreditNote = async (req) => {
     session.endSession();
     throw error;
   }
+};
+
+export const getAllCreditNotes = async (req) => {
+  const { from = 0, limit = 5 } = req.query;
+  const [total, creditNotesList] = await Promise.all([
+    CreditNote.countDocuments(),
+    CreditNote.find().skip(Number(from)).limit(Number(limit)),
+  ]);
+
+  return {
+    total,
+    creditNotesList,
+  };
+};
+
+export const getCreditNoteByCreditNumber = async (creditNumber) => {
+  const creditNote = await CreditNote.findOne({ creditNumber });
+  if (!creditNote) {
+    throw new Error("No existe una nota de crédito con ese número");
+  }
+
+  return creditNote;
 };
