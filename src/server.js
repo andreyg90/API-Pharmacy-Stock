@@ -6,6 +6,7 @@ import userRouter from "./routes/user.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import invoiceRouter from "./routes/invoice.routes.js";
 import creditNoteRouter from "./routes/creditNote.routes.js";
+import batchRouter from "./routes/batch.routes.js";
 import conectarBD from "./config/db.connection.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
 
@@ -23,6 +24,7 @@ class Server {
       auth: "/api/auth",
       invoice: "/api/invoices",
       creditNote: "/api/creditNotes",
+      batch: "/api/batches",
     };
 
     this.db();
@@ -51,6 +53,7 @@ class Server {
     this.app.use(this.path.auth, authRouter);
     this.app.use(this.path.invoice, invoiceRouter);
     this.app.use(this.path.creditNote, creditNoteRouter);
+    this.app.use(this.path.batch, batchRouter);
   }
 
   listen() {
