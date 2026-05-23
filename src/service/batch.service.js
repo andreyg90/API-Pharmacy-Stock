@@ -1,6 +1,10 @@
 import Batch from "../models/batch.model.js";
 
-export const createNewBatch = async () => {
+export const createNewBatch = async (data) => {
+  const newBatch = await Batch.create({ ...data });
+  if (!newBatch) {
+    throw new Error("Error creating the batch");
+  }
 
-    const newBatch = await Batch.create({})
+  return newBatch;
 };
